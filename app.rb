@@ -21,6 +21,10 @@ def get_json_hash(url)
   JSON.parse(@access_token.get(url).body)
 end
 
+def to_request_json(response)
+  { :body => response.body, :code => response.code, :message => response.message}.to_json
+end
+
 # Helper method to create an OAuth consumer, which can generate request and access tokens.
 def consumer
   puts MISO_SITE
@@ -36,6 +40,7 @@ end
 get "/oauth/connect" do
   @request_token = consumer.get_request_token :oauth_callback => MISO_CALLBACK_URL
   session[:request_token], session[:request_token_secret] = @request_token.token, @request_token.secret
+  puts @request_token.authorize_url
   redirect @request_token.authorize_url
 end
 
@@ -44,7 +49,7 @@ get "/oauth/callback" do
   @request_token = OAuth::RequestToken.new(consumer, session[:request_token], session[:request_token_secret])
   @access_token = @request_token.get_access_token(:oauth_verifier => params[:oauth_verifier])
   session[:access_token], session[:access_secret] = @access_token.token, @access_token.secret
-  redirect "/oauth/user"
+  redirect "/api/test"
 end
 
 # Use the access token to access a user's checkins and basic information.
@@ -73,12 +78,12 @@ get %r{\/proxy\/([\w\/\.]+)$} do
   puts full_url
   puts request_ps
   if request_pms["_method"] == "GET"
-    @access_token.get(full_url).body
+    to_request_json(@access_token.get(full_url))
   elsif request_pms["_method"] == "POST"
-    @access_token.post(url, request_pms).body
+    to_request_json(@access_token.post(url, request_pms))
   elsif request_pms["_method"] == "PUT"
-    @access_token.put(url, request_pms).body
+    to_request_json(@access_token.put(url, request_pms))
   elsif request_pms["_method"] == "DELETE"
-    @access_token.post(url,request_pms).body
+    to_request_json(@access_token.delete(full_url))
   end
 end
