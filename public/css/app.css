@@ -12,12 +12,13 @@ letter-spacing: -0.03em;
 }
 
 h1{
-padding: 5px;
+padding: 13px 10px 7px 10px;
 margin: 0;
-background: #000;
-color: #fff;
+background:#000 url("/images/miso_top_logo.png") no-repeat 10px 0;
+color: #df5;
 font-size: 1em;
 font-weight: bold;
+text-indent: 130px;
 }
 
 h2{
@@ -27,10 +28,77 @@ font-size: 1.2em;
 font-weight: normal;
 }
 
+
+
+p{
+width: 35em;
+line-height: 1.6em;
+}
+
+.start, .instructions{
+width: 800px;
+margin: 60px auto;
+}
+
+.start, .flash{
+display: block;
+text-align:center;
+border:solid 3px #4477ff;
+color: #4477ff;
+background: #ddecff;
+padding: 10px;
+font-weight: bold;
+}
+
+.flash{
+    border-width: 0 0 3px 0;
+}
+
+.access{
+width:400px;
+}
+
+.access input[type='text']{
+width: 100%;
+}
+
+.dropdown{
+position: relative;
+height: 30px;
+}
+.presets{
+width: 170px;
+border:solid 1px #4477ff;
+background: #ddecff;
+padding: 5px;
+position: absolute;
+z-index: 2;
+
+}
+
+.presets h4{
+padding: 0;
+margin: 0;
+}
+
+.presets .expander{
+font-size: 0.7em;
+padding: 0 0 0 5px;
+color: #4477ff;
+}
+.preset{
+    color: #4477ff
+}
+
+.preset:hover{
+    font-weight: bold;
+}
+
+
 form{
 padding: 40px;
 float:left;
-width: 1600px;
+width: 1200px;
 }
 
 label{

@@ -7,10 +7,20 @@ require 'yaml'
 
 enable  :sessions, :logging
 
-MISO_CONSUMER_KEY = ENV['MISO_CONSUMER_KEY']
-MISO_CONSUMER_SECRET = ENV['MISO_CONSUMER_SECRET']
+ALLOW_ENV_KEYS = true
 MISO_SITE = ENV['MISO_SITE']
 MISO_CALLBACK_URL=ENV['MISO_CALLBACK_URL']
+
+def colorize(text, color_code)
+  "#{color_code}#{text}\e[0m"
+end
+
+def red(text); colorize(text, "\e[1;31m"); end
+def green(text); colorize(text, "\e[1;32m"); end
+
+
+puts "\nStarting API tool..."
+puts "We will be testing #{green(MISO_SITE)}\n\n"
 
 # Generate a consumer key and secret by creating a new application at:
 # http://gomiso.com/oauth_clients/new
@@ -27,13 +37,53 @@ end
 
 # Helper method to create an OAuth consumer, which can generate request and access tokens.
 def consumer
-  puts MISO_SITE
-  @consumer = OAuth::Consumer.new MISO_CONSUMER_KEY, MISO_CONSUMER_SECRET, :site => MISO_SITE
+  @consumer = OAuth::Consumer.new session[:consumer_key], session[:consumer_secret], :site => MISO_SITE
+end
+
+def set_session
+  if params[:consumer_key] && params[:consumer_secret]
+    session[:consumer_key] = params[:consumer_key]
+    session[:consumer_secret] = params[:consumer_secret]
+  elsif ALLOW_ENV_KEYS
+    session[:consumer_key] = ENV['MISO_CONSUMER_KEY']
+    session[:consumer_secret] = ENV['MISO_CONSUMER_SECRET']
+  else
+    session[:consumer_key] = session[:consumer_secret] = nil
+  end
+end
+
+def access?
+  session[:consumer_key] && session[:consumer_secret]
+end
+
+def authorized?
+  session[:access_token] && session[:access_secret]
+end
+
+def flash(key, value=nil)
+  if value
+    session[key] = value
+  else
+    @flash = session[key]
+    session[key] = nil
+    @flash.nil? ? nil : "<div class='flash'>" + @flash + "</div>"
+  end
+end
+
+before "/" do
+  if authorized?
+    flash(:authorized, "You've already been authorized.  Go ahead and test your heart out.")
+    redirect "/api/test"
+  elsif access?
+    redirect "/oauth/connect"
+  else
+    set_session
+  end
 end
 
 # Simple landing page with sign in prompt.
 get "/" do
-  "Click <a href='/oauth/connect'>here</a> to connect to Miso API through OAuth"
+  haml :home
 end
 
 # Generates and stores request token and redirects to Miso sign-in page.
@@ -69,6 +119,7 @@ get "/api/test" do
 end
 
 get %r{\/proxy\/([\w\/\.]+)$} do
+  puts session.inspect
   @access_token = OAuth::AccessToken.new(consumer, session[:access_token], session[:access_secret])
   request_pms = request.env["rack.request.query_hash"]
   request_ps  = request.env["rack.request.query_string"]

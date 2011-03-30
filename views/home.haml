@@ -1,0 +1,33 @@
+!!! 1.1
+%html
+  %head
+    %title Miso Api tool
+    %link{:rel => :stylesheet, :type => "text/css", :href => "/css/app.css"}
+    %script{:type => "text/javascript", :src => "/js/lib/cookie.js"}
+    %script{:type => "text/javascript", :src => "/js/jquery/jquery.js"}
+    %script{:type => "text/javascript", :src => "/js/api_requester/api_requester.js"}
+    %script{:type => "text/javascript", :src => "/js/jquery/jquery.api_tester.js"}
+    %script{:type => "text/javascript", :src => "/js/lib/json.js"}
+    %script{:type => "text/javascript", :src => "/js/app.js"}
+  %body
+    %h1 API Test Tool
+    - if access?
+      %a.start{:href => '/oauth/connect'} Your API keys have been set. Click here to gain authorization into our API Test Tool
+    .instructions
+      %h3 Using the API Test Tool
+      %p
+        If you haven't already registered your application with miso, log in to Miso and
+        visit the <a href=''>OAuth Client Applications page</a> to create a new application.
+        Once you've entered the appropriate information, take note of your <b>consumer access
+        token</b> ansd <b>consumer secret</b> key.
+      %form.access{:action => "/", :method => "GET"}
+        %fieldset
+          %legend Access Keys
+          .field
+            %label Miso Consumer Key
+            %input{:type => :text, :name => :consumer_key, :value => session[:consumer_key]}
+          .field
+            %label Miso Consumer Secret
+            %input{:type => :text, :name => :consumer_secret, :value => session[:consumer_secret]}
+          .field
+            %input{:type => :submit, :value => "submit"}

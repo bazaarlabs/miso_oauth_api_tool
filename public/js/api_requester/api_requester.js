@@ -98,7 +98,7 @@ window.ApiTestTool.presets            = {
   },
   following: {
     index: {
-      relative: "users/following",
+      relative: "users/follows",
       format: "json",
       method: "GET"
     },
@@ -223,14 +223,22 @@ function ApiRequester(options){
           data: request_object.data,
           async: false,
           success: function(data, status, httpResponse){
-            var body = JSON.parse(data.body)
-            var html_body = JSON.stringify(body, null, indent).replace( value_regex, ": <span class='val'>$1</span>" ).replace( key_regex, "<span class='key'>$1</span> :" ).replace(indent_regex,"<span class='indent'></span>").replace(/\n/g,"<div class='line_break'></div>")
+            try{
+                var body = JSON.parse(data.body)
+                var html_body = JSON.stringify(body, null, indent).replace( value_regex, ": <span class='val'>$1</span>" ).replace( key_regex, "<span class='key'>$1</span> :" ).replace(indent_regex,"<span class='indent'></span>").replace(/\n/g,"<div class='line_break'></div>")
+            }
+            catch(err){
+              html_body = data.body
+             }
             response_object.data = data
             response_object.http_response = httpResponse
             $("#data").html(html_body)
             response_object.class_name = data.message == "OK" ? "success" : "error"
             $("#status").attr("class",response_object.class_name).val(data.code + ": " + data.message)
             api_r.options.callbacks.ajax && api_r.options.callbacks.ajax.call(api_r)
+          },
+          error: function(data, status, http_status){
+            alert("An error occurred")
           }
      })
 

@@ -11,11 +11,13 @@
     %script{:type => "text/javascript", :src => "/js/app.js"}
   %body
     %h1 Miso API Test Tool
+    = flash(:authorized)
     %form#tool{:action => "/proxy/something", :method => "POST"}
       %div.request.fieldset
         %h2 Request Setup
-        .field.presets
-          %label Presets
+        .field.dropdown
+          .presets
+            %h4 Presets
         .field
           %label Route Prefix
           %input{:type => :text, :name => "route_prefix", :id => "prefix", :value => "/api/oauth/v1"}

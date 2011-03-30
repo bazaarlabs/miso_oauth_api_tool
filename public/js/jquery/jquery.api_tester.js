@@ -1,8 +1,6 @@
 $.fn.extend({
 
-    loadingIndicator: function(options){
-
-    },
+    loadingIndicator: function(options){},
 
     apiRequester: function(options){
 
