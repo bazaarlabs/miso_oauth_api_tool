@@ -1,148 +1,3 @@
-window.ApiTestTool                     = window.ApiTestTool || {}
-window.ApiTestTool.submit_button_html  = "<div class='field submit'><input type='button' value='submit' id='submit'/></div>"
-window.ApiTestTool.submit_button       = $(window.ApiTestTool.submit_button_html)
-
-window.ApiTestTool.presets            = {
-  users: {
-    show: {
-      relative: "users/show",
-      format: "json",
-      method: "GET",
-      field_0_name: "user_id",
-      field_0_value: "138625"
-    },
-    index: {
-      relative: "users",
-      format: "json",
-      method: "GET",
-      field_0_name: "q",
-      field_0_value: "justin",
-      field_1_name: "following",
-      field_1_value: "false"
-    }
-  },
-  comments: {
-    index: {
-      relative: "feeds/comments",
-      format: "json",
-      method: "GET",
-      field_0_name: "q",
-      field_0_value: "justin",
-      field_1_name: "",
-      field_1_value: ""
-    },
-    create: {
-      relative: "feeds/comments",
-      format: "json",
-      method: "POST",
-      field_0_name: "feed_item_id",
-      field_0_value: "1822292",
-      field_1_name: "comment",
-      field_1_value: "This is a test coment from the api test tool"
-    },
-    destroy: {
-      relative: "feeds/comments",
-      format: "json",
-      method: "DELETE",
-      field_0_name: "comment_id",
-      field_0_value: "41158",
-      field_1_name: "",
-      field_1_value: ""
-    }
-  },
-  likes: {
-    index: {
-      relative: "feeds/likes",
-      format: "json",
-      method: "GET",
-      field_0_name: "feed_item_id",
-      field_0_value: "1822292",
-      field_1_name: "",
-      field_1_value: ""
-    },
-    create: {
-      relative: "feeds/likes",
-      format: "json",
-      method: "POST",
-      field_0_name: "feed_item_id",
-      field_0_value: "1822292"
-    },
-    destroy: {
-      relative: "feeds/likes",
-      format: "json",
-      method: "DELETE",
-      field_0_name: "like_id",
-      field_0_value: "41158"
-    }
-  },
-  favorites: {
-    index: {
-      relative: "media/favorites",
-      format: "json",
-      method: "GET"
-    },
-    create: {
-      relative: "media/favorites",
-      format: "json",
-      method: "POST",
-      field_0_name: "media_id",
-      field_0_value: "14833"
-    },
-    destroy: {
-      relative: "media/favorites",
-      format: "json",
-      method: "DELETE",
-      field_0_name: "media_id",
-      field_0_value: "14833"
-    }
-  },
-  following: {
-    index: {
-      relative: "users/follows",
-      format: "json",
-      method: "GET"
-    },
-    create: {
-      relative: "users/follows",
-      format: "json",
-      method: "POST",
-      field_0_name: "user_id",
-      field_0_value: "138627"
-    },
-    destroy: {
-      relative: "users/follows",
-      format: "json",
-      method: "DELETE",
-      field_0_name: "user_id",
-      field_0_value: "138627"
-    },
-  }
-}
-
-window.ApiTestTool.setData = function(field_values){
-  $(".keypairs input").val("")
-  $.each(field_values, function(k,v){
-    $("#"+k).val(v)
-  })
-}
-
-window.ApiTestTool.display_presets = [
-  "users_show",
-  "users_index",
-  "comments_index",
-  "comments_create",
-  "comments_destroy",
-  "likes_index",
-  "likes_create",
-  "likes_destroy",
-  "favorites_index",
-  "favorites_create",
-  "favorites_destroy",
-  "following_index",
-  "following_create",
-  "following_destroy"
-]
-
 function ApiRequester(options){
 
     var api_r = this
@@ -210,11 +65,7 @@ function ApiRequester(options){
      var response_object  = {}
      var response_element = this.find(this.selectors.response)
      var request_object   = this.request = {data: this.data_params, url: this.url_params.real}
-     var indent = "  "
 
-     var indent_regex = new RegExp(indent, "gim")
-     var value_regex  = new RegExp(":\s*(\"[^{}\n\r]+\"|true|false|[0-9]+)", "gi")
-     var key_regex    = new RegExp("\"([^{}\n\r]+)\"\s*:", "gim")
 
      $.ajax({
           url: request_object.url,
@@ -225,7 +76,7 @@ function ApiRequester(options){
           success: function(data, status, httpResponse){
             try{
                 var body = JSON.parse(data.body)
-                var html_body = JSON.stringify(body, null, indent).replace( value_regex, ": <span class='val'>$1</span>" ).replace( key_regex, "<span class='key'>$1</span> :" ).replace(indent_regex,"<span class='indent'></span>").replace(/\n/g,"<div class='line_break'></div>")
+                var html_body = JSON.pretty_stringify(body)
             }
             catch(err){
               html_body = data.body

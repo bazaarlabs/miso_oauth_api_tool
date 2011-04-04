@@ -20,4 +20,6 @@ $(document).ready(function(){
     function(){$(".preset").hide()}
   )
 
+  setTimeout("$('.flash').fadeOut(500)", 3000)
+
 })
